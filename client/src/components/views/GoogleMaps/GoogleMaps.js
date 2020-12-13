@@ -30,7 +30,20 @@ export class GoogleMaps extends Component {
   }
 
   componentDidMount() {
-    this.setGeoCode(this.state.mapPosition.lat, this.state.mapPosition.lng);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.setState({
+          mapPosition: {
+            lat: position.coords.latitude, lng: position.coords.longitude
+          },
+          markerPosition: {
+            lat: position.coords.latitude, lng: position.coords.longitude
+          }
+        }, this.setGeoCode(position.coords.latitude, position.coords.longitude))
+      })
+    } else {
+      this.setGeoCode(this.state.mapPosition.lat, this.state.mapPosition.lng);
+    }
   }
 
   setGeoCode = (newLat, newLng) => {
@@ -96,6 +109,7 @@ export class GoogleMaps extends Component {
       <GoogleMap
         defaultZoom={this.state.zoom}
         defaultCenter={{ lat: this.state.mapPosition.lat, lng: this.state.mapPosition.lng }}
+
       >
         <Marker
           draggable={true}
