@@ -6,6 +6,9 @@ import {
   Marker,
   InfoWindow,
 } from "react-google-maps";
+import Geocode from 'react-geocode';
+
+Geocode.setApiKey('AIzaSyBFYDtLT_mOBoUggaRHn-wtKwdI_B0OUHY')
 
 export class GoogleMaps extends Component {
 
@@ -24,19 +27,54 @@ export class GoogleMaps extends Component {
     },
   }
 
+  getCity = (addressArray) => {
+    const list = addressArray.filter((value) => {
+      return value.types.includes("administrative_area_level_1");
+    });
+    return list[0].long_name;
+  }
+
+  getArea = (addressArray) => {
+    const list = addressArray.filter((value) => {
+      return value.types.includes("sublocality_level_1");
+    });
+    list.push(addressArray.filter((value) => {
+      return value.types.includes("locality");
+    }))
+    return list[0].long_name;
+  }
+
+  getState = (addressArray) => {
+    const list = addressArray.filter((value) => {
+      return value.types.includes("sublocality_level_2");
+    });
+    return list[0].long_name;
+  }
+
   onMarkerDragEnd = (event) => {
     const newLat = event.latLng.lat();
     const newLng = event.latLng.lng();
-    this.setState({
-      mapPosition: {
-        lat: newLat, lng: newLng
-      },
-      markerPosition: {
-        lat: newLat, lng: newLng
-      }
-    });
-  }
+    Geocode.fromLatLng(newLat, newLng).then(response => {
+      const address = response.results[0].formmatted_address,
+        addressArray = response.results[0].address_components,
+        city = this.getCity(addressArray),
+        area = this.getArea(addressArray),
+        state = this.getState(addressArray);
 
+      this.setState({
+        address,
+        city,
+        area,
+        state,
+        mapPosition: {
+          lat: newLat, lng: newLng
+        },
+        markerPosition: {
+          lat: newLat, lng: newLng
+        }
+      });
+    })
+  }
 
   render() {
     const MapWithAMarker = withScriptjs(withGoogleMap(props =>
