@@ -24,6 +24,20 @@ export class GoogleMaps extends Component {
     },
   }
 
+  onMarkerDragEnd = (event) => {
+    const newLat = event.latLng.lat();
+    const newLng = event.latLng.lng();
+    this.setState({
+      mapPosition: {
+        lat: newLat, lng: newLng
+      },
+      markerPosition: {
+        lat: newLat, lng: newLng
+      }
+    });
+  }
+
+
   render() {
     const MapWithAMarker = withScriptjs(withGoogleMap(props =>
       <GoogleMap
@@ -31,6 +45,8 @@ export class GoogleMaps extends Component {
         defaultCenter={{ lat: this.state.mapPosition.lat, lng: this.state.mapPosition.lng }}
       >
         <Marker
+          draggable={true}
+          onDragEnd={this.onMarkerDragEnd}
           position={{ lat: this.state.markerPosition.lat, lng: this.state.markerPosition.lng }}
         >
           <InfoWindow >
