@@ -1,7 +1,7 @@
 {
-  "name": "justinjeong5.github.io",
+  "name": "react-google-map",
   "version": "1.0.0",
-  "description": "justinjeong5.github.io",
+  "description": "react-google-map",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/justinjeong5/justinjeong5.github.io.git"
+    "url": "git+https://github.com/justinjeong5/react-google-map.git"
   },
   "author": "shinywaterjeong",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/justinjeong5/justinjeong5.github.io/issues"
+    "url": "https://github.com/justinjeong5/react-google-map/issues"
   },
-  "homepage": "https://github.com/justinjeong5/justinjeong5.github.io#readme",
+  "homepage": "https://github.com/justinjeong5/react-google-map#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
