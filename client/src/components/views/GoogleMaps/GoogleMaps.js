@@ -8,6 +8,7 @@ import {
 } from "react-google-maps";
 import Geocode from 'react-geocode';
 import { Descriptions } from 'antd';
+import AutoComplete from 'react-google-autocomplete';
 
 Geocode.setApiKey('AIzaSyBFYDtLT_mOBoUggaRHn-wtKwdI_B0OUHY')
 
@@ -29,18 +30,27 @@ export class GoogleMaps extends Component {
   }
 
   componentDidMount() {
-    Geocode.fromLatLng(this.state.mapPosition.lat, this.state.mapPosition.lng).then(response => {
+    this.setGeoCode(this.state.mapPosition.lat, this.state.mapPosition.lng);
+  }
+
+  setGeoCode = (newLat, newLng) => {
+    Geocode.fromLatLng(newLat, newLng).then(response => {
       const address = response.results[0].formatted_address,
         addressArray = response.results[0].address_components,
         city = this.getCity(addressArray),
         area = this.getArea(addressArray),
         state = this.getState(addressArray);
-
       this.setState({
         address,
         city,
         area,
-        state
+        state,
+        mapPosition: {
+          lat: newLat, lng: newLng
+        },
+        markerPosition: {
+          lat: newLat, lng: newLng
+        }
       });
     })
   }
@@ -72,27 +82,13 @@ export class GoogleMaps extends Component {
   onMarkerDragEnd = (event) => {
     const newLat = event.latLng.lat();
     const newLng = event.latLng.lng();
-    Geocode.fromLatLng(newLat, newLng).then(response => {
-      const address = response.results[0].formatted_address,
-        addressArray = response.results[0].address_components,
-        city = this.getCity(addressArray),
-        area = this.getArea(addressArray),
-        state = this.getState(addressArray);
+    this.setGeoCode(newLat, newLng);
+  }
 
-      console.log(addressArray, 'addressArray')
-      this.setState({
-        address,
-        city,
-        area,
-        state,
-        mapPosition: {
-          lat: newLat, lng: newLng
-        },
-        markerPosition: {
-          lat: newLat, lng: newLng
-        }
-      });
-    })
+  onPlaceSelected = (place) => {
+    if (place.geometry) {
+      this.setGeoCode(place.geometry.location.lat(), place.geometry.location.lng())
+    }
   }
 
   render() {
@@ -107,9 +103,13 @@ export class GoogleMaps extends Component {
           position={{ lat: this.state.markerPosition.lat, lng: this.state.markerPosition.lng }}
         >
           <InfoWindow >
-            <div>{`${this.state.state} ${this.state.area}, ${this.state.city}`}</div>
+            <div>{this.state.address}</div>
           </InfoWindow>
         </Marker>
+        <AutoComplete
+          style={{ width: '100%', height: 40, paddingLeft: 16, marginTop: 2, marginBottom: '2rem' }}
+          onPlaceSelected={this.onPlaceSelected}
+        />
       </GoogleMap>
     ));
 
